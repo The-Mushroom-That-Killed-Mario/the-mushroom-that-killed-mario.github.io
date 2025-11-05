@@ -108,8 +108,8 @@
 
 <!-- ===== Фоновое видео ===== -->
 <div class="bg-video-wrap" id="bgWrap" aria-hidden="true">
-  <video class="bg" id="bgVideo" muted playsinline preload="auto" poster="frame.jpg">
-    <source src="explosion_hd.mp4" type="video/mp4" />
+  <video class="bg" id="bgVideo" muted playsinline preload="auto" poster="./assets/frame.jpg">
+    <source src="./assets/explosion_hd.mp4" type="video/mp4" />
     Ваш браузер не поддерживает видео тег.
   </video>
   <div class="grade"></div>
@@ -153,27 +153,7 @@
   </div>
 </div>
 
-<!-- Инициализация -->
-<script type="module">
-  import { ScreenEffect } from './screen-effect.js';
-
-  const fx = new ScreenEffect({
-    wrap:  document.getElementById('bgWrap'),
-    video: document.getElementById('bgVideo'),
-    flash: document.getElementById('flash'),
-    page:  document.getElementById('page'),
-  });
-
-  const btn   = document.getElementById('nukeBtn');
-  const reset = document.getElementById('resetBtn');
-
-  btn.addEventListener('click', () => fx.play());
-  btn.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); fx.play(); }
-  });
-
-  reset.addEventListener('click', () => fx.reset());
-  window.addEventListener('beforeunload', () => fx.destroy());
-</script>
+<!-- подключаем главный модуль -->
+<script type="module" src="./main.js"></script>
 </body>
 </html>
