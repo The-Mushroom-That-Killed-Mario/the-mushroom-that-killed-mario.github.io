@@ -7,6 +7,8 @@ echo.
 echo [94mhttp://localhost:8000[0m
 echo.
 
+start "" http://localhost:8000
+
 echo -----------------------------------------
 py -m http.server 8000
 
