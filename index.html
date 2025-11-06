@@ -1,7 +1,258 @@
-<!DOCTYPE html>
-<html>
+<!doctype html>
+<html lang="ru">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>CV — макет A4, 2 колонки</title>
+    <meta name="color-scheme" content="light dark">
+    <style>
+        /* ===== Палитра / базовые ===== */
+        :root{
+            --paper:#fff;        /* фон «бумаги» */
+            --ink:#111;          /* текст */
+            --muted:#6b7280;     /* вспомогательный текст */
+            --rule:#e5e7eb;      /* линии/границы */
+            --chip:#f3f4f6;
+            --gap-mm:0mm;       /* базовый промежуток между колонками/блоками */
+            --left-mm:72mm;      /* ширина левой колонки на A4 */
+            --pad-mm:0mm;       /* внутренние поля листа */
+        }
+        @media (prefers-color-scheme: dark){
+            body{ background:#0b0d10; }
+        }
+
+        *{ box-sizing:border-box; }
+        html,body{ height:100%; }
+        body{
+            margin:0;
+            background:#f1f5f9;
+            color:var(--ink);
+            font:14px/1.55 system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial,sans-serif;
+        }
+
+        /* ===== Лист A4 по центру ===== */
+        .listA4{
+            width:210mm;
+            min-height:297mm;
+            margin:18mm auto;
+            background:var(--paper);
+            box-shadow:0 10px 30px rgba(0,0,0,.08);
+            border-radius:4px;
+            overflow:hidden;
+            display:grid;
+            /* Внутреннее поле страницы */
+            padding:var(--pad-mm);
+            /* Две колонки страницы */
+            grid-template-columns: var(--left-mm) 1fr;
+            grid-template-rows: 1fr;       /* ← один ряд, растягиваемый на всю высоту */
+            grid-auto-rows: min-content;
+            column-gap: var(--gap-mm);
+        }
+
+        /* ===== Колонки ===== */
+        .colum-left{
+            display:flex;
+            flex-direction:column;
+            gap: calc(var(--gap-mm) * .6);
+            min-width:0; /* чтобы текст не выталкивал сетку */
+            background: #f3f3f3; /* светло-серый фон */
+            border-right: 1px solid #ff1010;     /* разделительная линия */
+            -webkit-print-color-adjust: exact; /* чтобы фон печатался */
+        }
+        /* ===== Колонки ===== */
+        .colum-right{
+            display:flex;
+            flex-direction:column;
+            gap: calc(var(--gap-mm) * .6);
+            min-width:0; /* чтобы текст не выталкивал сетку */
+        }
+
+
+
+        /* ===== Блоки в левой колонке: без фона/рамок/внутренних паддингов ===== */
+        .colum-left > div {
+            background: transparent;       /* фон берём у .colum-left */
+            border: none;                  /* без рамок */
+            padding: 0;                    /* без внутренних отступов у каждого блока */
+            border-radius: 0;              /* чтобы не было «пузырьков» на сером фоне */
+            break-inside: avoid;           /* не разрывать блок на печати */
+            page-break-inside: avoid;
+        }
+
+        /* ===== Блоки в правой колонке: прежний «карточный» стиль ===== */
+        .colum-right > div {
+            border-radius: 8px;
+            background: color-mix(in oklab, var(--paper) 96%, transparent);
+            border: 1px solid var(--rule);
+            padding: 10px 12px;
+            break-inside: avoid;
+            page-break-inside: avoid;
+        }
+
+
+
+        /* ===== Примеры оформления конкретных секций (кастомизируй смело) ===== */
+        /* Фото — по центру и круглое */
+        .block-photo {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 60mm;
+            height: 60mm;
+            margin: 0 auto;
+            border-radius: 50%;
+            overflow: hidden;
+            background: #e0e0e0; /* нейтральный фон за фото */
+            /* убираем тень здесь */
+            box-shadow: none;
+        }
+
+        .block-photo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50%;
+            /* 👇 добавляем лёгкую тень именно к самому кругу */
+            box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+            display: block;
+        }
+        .block-contacts ul,
+        .block-skills ul,
+        .block-tools ul{
+            margin:.4rem 0 0; padding-left:1.1rem;
+        }
+
+        .block-contacts,
+        .block-skills,
+        .block-tools {
+            /*padding-left: 5mm; !* отступ слева *!*/
+            margin-left: 10mm;
+        }
+
+
+        .pillset{ list-style:none; padding:0; margin:.2rem 0 0; display:flex; flex-wrap:wrap; gap:6px; }
+        .pillset li{
+            background:var(--chip);
+            border:1px solid var(--rule);
+            border-radius:999px;
+            padding:5px 8px;
+            font-size:12px;
+        }
+
+        .block-name{ border:none; padding:0; }
+        .block-name h1{ margin:0; font-size:28px; line-height:1.2; }
+        .block-position{ border:none; padding:0; color:var(--muted); margin-top:2px; }
+
+        .block-about-me p{ margin:.4rem 0 0; }
+
+        .block-experience .job{ margin:.5rem 0 0; padding:.2rem 0 0; border-top:1px solid var(--rule); }
+        .block-experience .job h3{ margin:.2rem 0; font-size:15px; }
+        .meta{ color:var(--muted); font-size:12px; }
+
+        /* ===== Печать ===== */
+        @page{ size:A4; margin: 12mm; }
+        @media print{
+            html,body{ background:transparent; }
+            .listA4{
+                width:auto; min-height:auto; margin:0; box-shadow:none; border-radius:0;
+                padding:0; /* поля возьмём из @page */
+                /* Снова задаём сетку внутри печатного поля */
+                display:grid;
+                grid-template-columns: var(--left-mm) 1fr;
+                column-gap: var(--gap-mm);
+                padding: var(--pad-mm);
+            }
+            /* Показывать URL рядом со ссылками на бумаге (опционально) */
+            a[href^="http"]::after{ content:" (" attr(href) ")"; color:#777; font-size:10px; }
+        }
+
+        /* ===== Адаптив (просмотр на телефоне) ===== */
+        @media (max-width: 960px){
+            .listA4{
+                width:100%; margin:0; border-radius:0; box-shadow:none;
+                grid-template-columns: 1fr;                /* одна колонка */
+                row-gap: var(--gap-mm);
+            }
+        }
+    </style>
+</head>
 <body>
-<h1>Hello World</h1>
-<p>I'm hosted with GitHub Pages, <b>kisa</b></p>
+
+<div class="listA4">
+
+    <!-- Левая колонка -->
+    <div class="colum-left">
+        <div class="block-photo">
+            <!-- подставь своё фото -->
+            <img src="img.png" alt="Фото">
+        </div>
+
+        <div class="block-contacts">
+            <h2>Контакты</h2>
+            <ul>
+                <li>📧 <a href="mailto:andrejdedula@gmail.com">andrejdedula@gmail.com</a></li>
+                <li>📱 <a href="tel:+375293425645">+375 29 342-56-45</a></li>
+                <li>📍 Минск, Беларусь</li>
+                <li>💬 <a href="https://t.me/DobriyChelovek17854">t.me/DobriyChelovek17854</a></li>
+            </ul>
+        </div>
+
+        <div class="block-skills">
+            <h2>Навыки</h2>
+            <ul class="pill set">
+                <li>Java</li><li>Spring Boot</li><li>Security</li><li>JWT</li>
+                <li>Hibernate</li><li>REST</li><li>PostgreSQL</li><li>MapStruct</li>
+            </ul>
+        </div>
+
+        <div class="block-tools">
+            <h2>Инструменты</h2>
+            <ul class="pill set">
+                <li>Maven</li><li>Gradle</li><li>Git</li><li>Docker</li><li>Swagger</li><li>Postman</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Правая колонка -->
+    <div class="colum-right">
+        <div class="block-name">
+            <h1>Братишка</h1>
+        </div>
+
+        <div class="block-position">
+            Java developer
+        </div>
+
+        <div class="block-about-me">
+            <h2>Обо мне</h2>
+            <p>Короткий абзац о фокусе, сильных сторонах и целях. 2–4 строки — идеально.</p>
+        </div>
+
+        <div class="block-experience">
+            <h2>Опыт работы</h2>
+
+            <div class="job">
+                <h3>УП «Фарнелл» — Java developer</h3>
+                <div class="meta">Декабрь 2022 — н.в., Минск</div>
+                <ul>
+                    <li>Анализатор логов: объединение и синхронизация логов, UI.</li>
+                    <li>Электронная очередь: доработка OSS, тестирование, сдача.</li>
+                    <li>Автоматизация: почта и интеграции с CRM.</li>
+                </ul>
+            </div>
+
+            <!-- ещё позиции по желанию -->
+        </div>
+
+        <div class="block-education">
+            <h2>Образование</h2>
+            <p><strong>ВГКС</strong><br><span class="meta">2011 — 2015 · ПО сетей телекоммуникаций</span></p>
+            <p><strong>IT-Academy</strong><br><span class="meta">Июнь 2023 · Энтерпрайз-Java</span></p>
+            <p><strong>BelHard</strong><br><span class="meta">Март 2024 · Микросервисы Java</span></p>
+        </div>
+    </div>
+
+</div>
+
 </body>
 </html>
