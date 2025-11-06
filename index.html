@@ -27,37 +27,50 @@
             color:var(--ink);
             font:14px/1.55 system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial,sans-serif;
         }
+
+        /* ===== Контейнер всех страниц ===== */
+        .pages{
+            width:210mm;
+            margin:18mm auto;
+        }
+
+        /* ===== Каждая страница — РОВНО A4 по высоте ===== */
         .listA4{
             width:210mm;
-            min-height:297mm;
-            margin:18mm auto;
+            height:297mm;                 /* фиксируем высоту под A4 */
             background:var(--paper);
             box-shadow:0 10px 30px rgba(0,0,0,.08);
             border-radius:4px;
-            overflow:hidden;
+            overflow:hidden;              /* важно: чтобы не было скролла внутри */
             display:grid;
             padding:var(--pad-mm);
             grid-template-columns: var(--left-mm) 1fr;
             grid-template-rows: 1fr;
-            grid-auto-rows: min-content;
             column-gap: var(--gap-mm);
+            margin-bottom:12mm;           /* зазор между страницами на экране */
         }
+
+        /* ===== Колонки ===== */
         .colum-left{
             display:flex;
             flex-direction:column;
             gap: calc(var(--gap-mm) * .6);
             min-width:0;
-            background: #f3f3f3;
+            background:#f3f3f3;
             border-right: 1px solid #ff1010;
             -webkit-print-color-adjust: exact;
+            padding-bottom:1px; /* микро-стабилизатор измерений */
         }
         .colum-right{
             display:flex;
             flex-direction:column;
             gap: calc(var(--gap-mm) * .6);
             min-width:0;
+            padding-bottom:1px;
         }
-        .colum-left > div {
+
+        /* Блоки внутри колонок */
+        .colum-left > .blk{
             background: transparent;
             border: none;
             padding: 0;
@@ -65,7 +78,7 @@
             break-inside: avoid;
             page-break-inside: avoid;
         }
-        .colum-right > div {
+        .colum-right > .blk{
             border-radius: 8px;
             background: color-mix(in oklab, var(--paper) 96%, transparent);
             border: 1px solid var(--rule);
@@ -73,6 +86,8 @@
             break-inside: avoid;
             page-break-inside: avoid;
         }
+
+        /* Фото */
         .block-photo {
             display: flex;
             justify-content: center;
@@ -93,6 +108,7 @@
             box-shadow: 0 2px 6px rgba(0,0,0,0.15);
             display: block;
         }
+
         .block-contacts ul,
         .block-skills ul,
         .block-tools ul{
@@ -103,14 +119,16 @@
         .block-tools {
             margin-left: 10mm;
         }
-        .pillset{ list-style:none; padding:0; margin:.2rem 0 0; display:flex; flex-wrap:wrap; gap:6px; }
-        .pillset li{
+
+        .pill set{ list-style:none; padding:0; margin:.2rem 0 0; display:flex; flex-wrap:wrap; gap:6px; }
+        .pill set li{
             background:var(--chip);
             border:1px solid var(--rule);
             border-radius:999px;
             padding:5px 8px;
             font-size:12px;
         }
+
         .block-name{ border:none; padding:0; }
         .block-name h1{ margin:0; font-size:28px; line-height:1.2; }
         .block-position{ border:none; padding:0; color:var(--muted); margin-top:2px; }
@@ -118,154 +136,272 @@
         .block-experience .job{ margin:.5rem 0 0; padding:.2rem 0 0; border-top:1px solid var(--rule); }
         .block-experience .job h3{ margin:.2rem 0; font-size:15px; }
         .meta{ color:var(--muted); font-size:12px; }
+
+        /* Печать */
         @page{ size:A4; margin: 12mm; }
         @media print{
             html,body{ background:transparent; }
+            .pages{ width:auto; margin:0; }
             .listA4{
-                width:auto; min-height:auto; margin:0; box-shadow:none; border-radius:0;
-                padding:0;
-                display:grid;
-                grid-template-columns: var(--left-mm) 1fr;
-                column-gap: var(--gap-mm);
-                padding: var(--pad-mm);
+                margin:0 0 0 0;
+                box-shadow:none; border-radius:0;
             }
             a[href^="http"]::after{ content:" (" attr(href) ")"; color:#777; font-size:10px; }
         }
+
+        /* Адаптив (просмотр на телефоне) */
         @media (max-width: 960px){
-            .listA4{
-                width:100%; margin:0; border-radius:0; box-shadow:none;
-                grid-template-columns: 1fr;
-                row-gap: var(--gap-mm);
-            }
+            .pages{ width:100%; margin:0; }
+            .listA4{ width:100%; border-radius:0; box-shadow:none; }
         }
     </style>
 </head>
 <body>
-<div class="listA4">
-    <div class="colum-left">
-        <div class="block-photo">
-            <img id="photo" src="img.png" alt="Фото">
-        </div>
-        <div class="block-contacts">
-            <h2>Контакты</h2>
-            <ul id="contacts"></ul>
-        </div>
-        <div class="block-skills">
-            <h2>Навыки</h2>
-            <ul id="skills" class="pill set"></ul>
-        </div>
-        <div class="block-tools">
-            <h2>Инструменты</h2>
-            <ul id="tools" class="pill set"></ul>
-        </div>
+
+<!-- Контейнер для сгенерированных страниц -->
+<div class="pages" id="pages"></div>
+
+<!-- Шаблон одной страницы (не отображается напрямую) -->
+<template id="page-template">
+    <div class="listA4">
+        <div class="colum-left"></div>
+        <div class="colum-right"></div>
     </div>
-    <div class="colum-right">
-        <div class="block-name">
-            <h1 id="name">—</h1>
-        </div>
-        <div class="block-position" id="position">—</div>
-        <div class="block-about-me">
-            <h2>Обо мне</h2>
-            <p id="about">—</p>
-        </div>
-        <div class="block-experience">
-            <h2>Опыт работы</h2>
-            <div id="experience"></div>
-        </div>
-        <div class="block-education">
-            <h2>Образование</h2>
-            <div id="education"></div>
-        </div>
-    </div>
-</div>
+</template>
 
 <script>
     async function loadCV(){
         try{
             const res = await fetch('data.json', {cache:'no-store'});
             const data = await res.json();
-            populate(data);
+            paginateFromData(data);
         }catch(e){
             console.error('Не удалось загрузить data.json', e);
         }
     }
 
+    /* Утилита: создать элемент */
     function el(tag, attrs={}, children=[]){
         const node = document.createElement(tag);
         Object.entries(attrs).forEach(([k,v])=>{
             if(k==='text') node.textContent = v;
             else if(k==='html') node.innerHTML = v;
             else if(k==='class') node.className = v;
-            else if(k==='href') node.setAttribute('href', v);
-            else if(k==='src') node.setAttribute('src', v);
-            else if(k==='target') node.setAttribute('target', v);
             else node.setAttribute(k,v);
         });
         children.forEach(ch => node.appendChild(ch));
         return node;
     }
 
-    function populate(cv){
-        document.getElementById('name').textContent = cv.personal?.name || '';
-        document.getElementById('position').textContent = cv.personal?.position || '';
-        document.getElementById('about').textContent = cv.personal?.about || '';
-        const photo = document.getElementById('photo');
-        if (cv.personal?.photo) photo.src = cv.personal.photo;
+    /* mm -> px (точное вычисление через реальную метрику) */
+    function mmToPx(mm){
+        const d = document.createElement('div');
+        d.style.position = 'absolute';
+        d.style.visibility = 'hidden';
+        d.style.height = '1mm';
+        document.body.appendChild(d);
+        const one = d.getBoundingClientRect().height || 3.78; // fallback ~96dpi
+        d.remove();
+        return mm * one;
+    }
 
-        const contacts = document.getElementById('contacts');
-        contacts.innerHTML = '';
-        if(cv.contacts?.email){
-            contacts.appendChild(el('li', {}, [
-                el('span', {text:'📧 '}), el('a', {href:`mailto:${cv.contacts.email}`, text: cv.contacts.email})
-            ]));
+    /* Создать новую страницу из шаблона */
+    function newPage(){
+        const tmpl = document.getElementById('page-template');
+        return tmpl.content.firstElementChild.cloneNode(true);
+    }
+
+    /* Проверка: влезает ли страница */
+    function pageFits(page){
+        // Сравниваем фактическую прокрутку и видимую высоту контейнера страницы
+        return page.scrollHeight <= page.clientHeight + 0.5; // небольшой люфт
+    }
+
+    /* Попытка добавить блок в указанный контейнер (колонку).
+       Если не влезает страница — блок переносится на новую страницу.
+       Возвращает текущую (возможно новую) страницу. */
+    function appendWithPagination(pagesWrap, page, columnEl, block){
+        columnEl.appendChild(block);
+        if (!pageFits(page)){
+            columnEl.removeChild(block);
+            // начать новую страницу
+            const next = newPage();
+            pagesWrap.appendChild(next);
+            const left = next.querySelector('.colum-left');
+            const right = next.querySelector('.colum-right');
+            // определить нужную колонку на новой странице
+            if (columnEl.classList.contains('colum-left')) left.appendChild(block);
+            else right.appendChild(block);
+            return next;
         }
-        if(cv.contacts?.phone){
+        return page;
+    }
+
+    /* Генерация структурированных блоков для колонок */
+    function buildLeftBlocks(cv){
+        const out = [];
+
+        // Фото
+        if (cv.personal?.photo){
+            const ph = el('div', {class:'blk block-photo'},
+                [ el('img', {src: cv.personal.photo, alt:'Фото'}) ]);
+            out.push(ph);
+        }
+
+        // Контакты
+        const contacts = el('div', {class:'blk block-contacts'}, [
+            el('h2', {text:'Контакты'}),
+            el('ul', {}, [])
+        ]);
+        const cul = contacts.querySelector('ul');
+        if (cv.contacts?.email) cul.appendChild(el('li', {html:`📧 <a href="mailto:${cv.contacts.email}">${cv.contacts.email}</a>`}));
+        if (cv.contacts?.phone){
             const telDigits = cv.contacts.phone.replace(/\s|-/g,'');
-            contacts.appendChild(el('li', {}, [
-                el('span', {text:'📱 '}), el('a', {href:`tel:${telDigits}`, text: cv.contacts.phone})
-            ]));
+            cul.appendChild(el('li', {html:`📱 <a href="tel:${telDigits}">${cv.contacts.phone}</a>`}));
         }
-        if(cv.contacts?.location){
-            contacts.appendChild(el('li', {text:`📍 ${cv.contacts.location}`}));
+        if (cv.contacts?.location) cul.appendChild(el('li', {text:`📍 ${cv.contacts.location}`}));
+        if (cv.contacts?.telegram){
+            const txt = cv.contacts.telegram.replace(/^https?:\/\//,'');
+            cul.appendChild(el('li', {html:`💬 <a href="${cv.contacts.telegram}" target="_blank">${txt}</a>`}));
         }
-        if(cv.contacts?.telegram){
-            contacts.appendChild(el('li', {}, [
-                el('span', {text:'💬 '}), el('a', {href:cv.contacts.telegram, text: cv.contacts.telegram.replace(/^https?:\/\//,''), target:'_blank'})
-            ]));
-        }
+        out.push(contacts);
 
-        function fillList(id, items){
-            const ul = document.getElementById(id);
-            ul.innerHTML = '';
-            (items||[]).forEach(s => ul.appendChild(el('li', {text:s})));
-        }
-        fillList('skills', cv.skills);
-        fillList('tools', cv.tools);
-
-        const expWrap = document.getElementById('experience');
-        expWrap.innerHTML='';
-        (cv.experience||[]).forEach(job => {
-            const jobDiv = el('div', {class:'job'}, [
-                el('h3', {text:`${job.company} — ${job.position}`}),
-                el('div', {class:'meta', text:`${job.period}${job.location ? ', ' + job.location : ''}`})
+        // Навыки
+        if (Array.isArray(cv.skills) && cv.skills.length){
+            const s = el('div', {class:'blk block-skills'}, [
+                el('h2', {text:'Навыки'}),
+                el('ul', {class:'pillset'}, cv.skills.map(x=>el('li',{text:x})))
             ]);
-            if(Array.isArray(job.responsibilities) && job.responsibilities.length){
-                const ul = el('ul');
-                job.responsibilities.forEach(r => ul.appendChild(el('li', {text:r})));
-                jobDiv.appendChild(ul);
+            out.push(s);
+        }
+
+        // Инструменты
+        if (Array.isArray(cv.tools) && cv.tools.length){
+            const t = el('div', {class:'blk block-tools'}, [
+                el('h2', {text:'Инструменты'}),
+                el('ul', {class:'pillset'}, cv.tools.map(x=>el('li',{text:x})))
+            ]);
+            out.push(t);
+        }
+
+        return out;
+    }
+
+    function buildRightBlocks(cv){
+        const seq = [];
+
+        // Имя/позиция единым блоком (компактно, лучше держать вместе)
+        const head = el('div', {class:'blk'}, [
+            el('div', {class:'block-name'}, [ el('h1', {text: cv.personal?.name || ''}) ]),
+            el('div', {class:'block-position', text: cv.personal?.position || ''})
+        ]);
+        seq.push(head);
+
+        // Обо мне
+        if (cv.personal?.about){
+            const about = el('div', {class:'blk block-about-me'}, [
+                el('h2', {text:'Обо мне'}),
+                el('p', {text: cv.personal.about})
+            ]);
+            seq.push(about);
+        }
+
+        // Опыт — заголовок как отдельный блок, затем каждая должность отдельным блоком
+        const expHeader = () => el('div', {class:'blk'}, [ el('h2', {text:'Опыт работы'}) ]);
+        let addedAnyExp = false;
+        if (Array.isArray(cv.experience) && cv.experience.length){
+            seq.push(expHeader()); // первый заголовок
+            addedAnyExp = true;
+            cv.experience.forEach(job=>{
+                const jobDiv = el('div', {class:'blk block-experience'}, [
+                    el('div', {class:'job'}, [
+                        el('h3', {text:`${job.company} — ${job.position}`}),
+                        el('div', {class:'meta', text:`${job.period}${job.location ? ', ' + job.location : ''}`}),
+                        (Array.isArray(job.responsibilities) && job.responsibilities.length)
+                            ? el('ul', {}, job.responsibilities.map(r=>el('li',{text:r})))
+                            : el('div') /* пустышка */
+                    ])
+                ]);
+                // специальная метка для логики повтора заголовка
+                jobDiv.dataset.section = 'experience';
+                seq.push(jobDiv);
+            });
+        }
+
+        // Образование — аналогично
+        const eduHeader = () => el('div', {class:'blk'}, [ el('h2', {text:'Образование'}) ]);
+        if (Array.isArray(cv.education) && cv.education.length){
+            seq.push(eduHeader());
+            cv.education.forEach(ed=>{
+                const edBlk = el('div', {class:'blk block-education'}, [
+                    el('p', {}, [
+                        el('strong', {text: ed.institution || ''}),
+                        el('br'),
+                        el('span', {class:'meta', text:`${ed.period || ''} · ${ed.program || ''}`})
+                    ])
+                ]);
+                edBlk.dataset.section = 'education';
+                seq.push(edBlk);
+            });
+        }
+
+        return { seq, headers: { experience: expHeader, education: eduHeader } };
+    }
+
+    /* Главная функция пагинации */
+    function paginateFromData(cv){
+        const pagesWrap = document.getElementById('pages');
+        pagesWrap.innerHTML='';
+
+        // создаём первую страницу
+        let page = newPage();
+        pagesWrap.appendChild(page);
+        let left = page.querySelector('.colum-left');
+        let right = page.querySelector('.colum-right');
+
+        // левая колонка наполняется секциями блоками
+        const leftBlocks = buildLeftBlocks(cv);
+        leftBlocks.forEach(block=>{
+            const before = page;
+            page = appendWithPagination(pagesWrap, page, left, block);
+            if (page !== before){ // если переехали на новую страницу — переназначаем ссылки
+                left = page.querySelector('.colum-left');
+                right = page.querySelector('.colum-right');
             }
-            expWrap.appendChild(jobDiv);
         });
 
-        const eduWrap = document.getElementById('education');
-        eduWrap.innerHTML='';
-        (cv.education||[]).forEach(ed => {
-            const p = el('p', {}, [
-                el('strong', {text: ed.institution || ''}),
-                el('br'),
-                el('span', {class:'meta', text:`${ed.period || ''} · ${ed.program || ''}`})
-            ]);
-            eduWrap.appendChild(p);
+        // правая колонка: последовательность мелких блоков, с повторами заголовков при переносе
+        const { seq, headers } = buildRightBlocks(cv);
+        let lastSection = null; // 'experience' | 'education' | null
+        seq.forEach(block=>{
+            const before = page;
+            page = appendWithPagination(pagesWrap, page, right, block);
+
+            // если блок не поместился и перелистнули — нужно проверить, не потеряли ли заголовок секции
+            if (page !== before){
+                left = page.querySelector('.colum-left');
+                right = page.querySelector('.colum-right');
+
+                // если переносим блок секции (experience/education), добавим заголовок на новую страницу
+                const section = block.dataset.section;
+                if (section && headers[section]){
+                    const hdr = headers[section]();
+                    // ВСТАВЛЯЕМ заголовок перед самим блоком на новой странице
+                    right.insertBefore(hdr, block);
+                    // если внезапно даже заголовок не влез (крайне редкий случай) — начнём ещё одну страницу
+                    if (!pageFits(page)){
+                        right.removeChild(hdr);
+                        right.removeChild(block);
+                        const next = newPage();
+                        pagesWrap.appendChild(next);
+                        page = next;
+                        left = page.querySelector('.colum-left');
+                        right = page.querySelector('.colum-right');
+                        right.appendChild(hdr);
+                        right.appendChild(block);
+                    }
+                }
+            }
         });
     }
 
