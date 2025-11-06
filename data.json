@@ -1,0 +1,62 @@
+{
+  "personal": {
+    "name": "Братишка",
+    "position": "Java developer",
+    "photo": "img.png",
+    "about": "Короткий абзац о фокусе, сильных сторонах и целях. 2–4 строки — идеально."
+  },
+  "contacts": {
+    "email": "andrejdedula@gmail.com",
+    "phone": "+375293425645",
+    "location": "Минск, Беларусь",
+    "telegram": "https://t.me/DobriyChelovek17854"
+  },
+  "skills": [
+    "Java",
+    "Spring Boot",
+    "Security",
+    "JWT",
+    "Hibernate",
+    "REST",
+    "PostgreSQL",
+    "MapStruct"
+  ],
+  "tools": [
+    "Maven",
+    "Gradle",
+    "Git",
+    "Docker",
+    "Swagger",
+    "Postman"
+  ],
+  "experience": [
+    {
+      "company": "УП «Фарнелл»",
+      "position": "Java developer",
+      "period": "Декабрь 2022 — н.в.",
+      "location": "Минск",
+      "responsibilities": [
+        "Анализатор логов: объединение и синхронизация логов, UI.",
+        "Электронная очередь: доработка OSS, тестирование, сдача.",
+        "Автоматизация: почта и интеграции с CRM."
+      ]
+    }
+  ],
+  "education": [
+    {
+      "institution": "ВГКС",
+      "period": "2011 — 2015",
+      "program": "ПО сетей телекоммуникаций"
+    },
+    {
+      "institution": "IT-Academy",
+      "period": "Июнь 2023",
+      "program": "Энтерпрайз-Java"
+    },
+    {
+      "institution": "BelHard",
+      "period": "Март 2024",
+      "program": "Микросервисы Java"
+    }
+  ]
+}
