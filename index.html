@@ -28,7 +28,7 @@
             font:14px/1.55 system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial,sans-serif;
         }
 
-        /* ===== Экран/печатные страницы (Desktop) ===== */
+        /* ===== Desktop / Print контейнер страниц ===== */
         .pages{
             width:210mm;
             margin:18mm auto;
@@ -45,7 +45,7 @@
             grid-template-columns: var(--left-mm) 1fr;
             grid-template-rows: 1fr;
             column-gap: var(--gap-mm);
-            margin-bottom:12mm;
+            margin-bottom:12mm;           /* расстояние между страницами на экране */
         }
         .colum-left{
             display:flex; flex-direction:column; gap: calc(var(--gap-mm) * .6); min-width:0;
@@ -69,6 +69,7 @@
             break-inside: avoid; page-break-inside: avoid;
         }
 
+        /* Фото */
         .block-photo {
             display:flex; justify-content:center; align-items:center;
             width:60mm; height:60mm; margin:0 auto; border-radius:50%; overflow:hidden;
@@ -91,16 +92,7 @@
         .block-experience .job h3{ margin:.2rem 0; font-size:15px; }
         .meta{ color:var(--muted); font-size:12px; }
 
-        /* Печать */
-        @page{ size:A4; margin: 12mm; }
-        @media print{
-            html,body{ background:transparent; }
-            .pages{ width:auto; margin:0; }
-            .listA4{ margin:0; box-shadow:none; border-radius:0; }
-            a[href^="http"]::after{ content:" (" attr(href) ")"; color:#777; font-size:10px; }
-        }
-
-        /* ===== Мобильный режим: одна колонка, естественная высота, без пагинации ===== */
+        /* ===== Мобильная лента (без пагинации) ===== */
         #mobile{ display:none; }
         #mobile .blk{
             background:var(--paper);
@@ -110,16 +102,37 @@
             margin:10px 12px;
         }
         #mobile .block-photo{
-            width:160px; height:160px; margin:8px auto 4px auto; /* круг покрупнее на телефоне */
+            width:160px; height:160px; margin:8px auto 4px auto;
         }
         #mobile .block-contacts, #mobile .block-skills, #mobile .block-tools{
             margin-left:0;
         }
 
+        /* ===== Печать ===== */
+        @page{ size:A4; margin: 12mm; }
+        @media print{
+            html,body{ background:transparent; }
+            .pages{ display:block !important; width:auto; margin:0 !important; }
+            #mobile{ display:none !important; }
+
+            .listA4{
+                margin:0 !important;
+                box-shadow:none; border-radius:0;
+                height:297mm;                /* фиксированная высота листа */
+                overflow:hidden;
+                page-break-after: always;
+            }
+            .listA4:last-child{ page-break-after: auto; }
+
+            /* показывать URL рядом со ссылками (опционально) */
+            a[href^="http"]::after{ content:" (" attr(href) ")"; color:#777; font-size:10px; }
+        }
+
+        /* ===== Мобильный режим (экран) ===== */
         @media (max-width: 960px){
-            .pages{ display:none; }   /* скрываем пагинированные листы */
-            #mobile{ display:block; } /* показываем мобильный поток */
-            body{ background:#fff; }  /* чистый фон */
+            .pages{ display:none; }      /* скрываем страницы */
+            #mobile{ display:block; }    /* показываем ленту */
+            body{ background:#fff; }     /* чистый фон */
         }
     </style>
 </head>
@@ -140,28 +153,59 @@
 </template>
 
 <script>
+    let __CV_DATA = null;    // кэш данных
+    let __IS_MOBILE = null;  // текущее состояние matchMedia
+
+    document.addEventListener('DOMContentLoaded', loadCV);
+
+    /* === Загрузка данных и выбор рендера === */
     async function loadCV(){
         try{
             const res = await fetch('data.json', {cache:'no-store'});
             const data = await res.json();
+            __CV_DATA = data;
 
-            // если мобильное окно — рендерим одну колонку-ленту, иначе — пагинация A4
-            const isMobile = window.matchMedia('(max-width: 960px)').matches;
-            if (isMobile) renderMobile(data);
-            else paginateFromData(data);
+            const mq = window.matchMedia('(max-width: 960px)');
+            __IS_MOBILE = mq.matches;
 
-            // при смене ширины на лету — перестраиваем
-            window.matchMedia('(max-width: 960px)').addEventListener('change', (e)=>{
-                if (e.matches) { clearAll(); renderMobile(data); }
-                else           { clearAll(); paginateFromData(data); }
+            if (__IS_MOBILE) renderMobile(data);
+            else             paginateFromData(data);
+
+            // Перестраивать при изменении ширины
+            mq.addEventListener('change', (e)=>{
+                __IS_MOBILE = e.matches;
+                clearAll();
+                __IS_MOBILE ? renderMobile(__CV_DATA) : paginateFromData(__CV_DATA);
             });
 
+            // --- Переключение на пагинацию перед печатью и возврат после ---
+            function beforePrint(){
+                if (__IS_MOBILE){
+                    clearAll();
+                    paginateFromData(__CV_DATA); // построить страницы A4
+                }
+            }
+            function afterPrint(){
+                if (__IS_MOBILE){
+                    clearAll();
+                    renderMobile(__CV_DATA);     // вернуть мобильную ленту
+                }
+            }
+            window.addEventListener('beforeprint', beforePrint);
+            window.addEventListener('afterprint',  afterPrint);
+
+            const mqPrint = window.matchMedia('print');
+            if (mqPrint && mqPrint.addEventListener){
+                mqPrint.addEventListener('change', e => e.matches ? beforePrint() : afterPrint());
+            } else if (mqPrint && mqPrint.addListener){ // устаревшее API
+                mqPrint.addListener(e => e.matches ? beforePrint() : afterPrint());
+            }
         }catch(e){
             console.error('Не удалось загрузить data.json', e);
         }
     }
 
-    /* Утилита: создать элемент */
+    /* === Утилиты === */
     function el(tag, attrs={}, children=[]){
         const node = document.createElement(tag);
         Object.entries(attrs).forEach(([k,v])=>{
@@ -173,8 +217,14 @@
         children.forEach(ch => node.appendChild(ch));
         return node;
     }
+    function clearAll(){
+        const p = document.getElementById('pages');
+        const m = document.getElementById('mobile');
+        p.innerHTML = '';
+        m.innerHTML = '';
+    }
 
-    /* Создание структурированных блоков для колонок (переиспользуется и в mobile, и в desktop) */
+    /* === Построение блоков из JSON (общие для обоих режимов) === */
     function buildLeftBlocks(cv){
         const out = [];
         if (cv.personal?.photo){
@@ -209,7 +259,6 @@
         }
         return out;
     }
-
     function buildRightBlocks(cv){
         const seq = [];
         const head = el('div', {class:'blk'}, [
@@ -258,10 +307,10 @@
                 seq.push(edBlk);
             });
         }
-        return { seq, headers: { /* desktop only */ } };
+        return { seq };
     }
 
-    /* ===== Desktop pagination (как раньше) ===== */
+    /* === Desktop: автопагинация A4 === */
     function newPage(){
         const tmpl = document.getElementById('page-template');
         return tmpl.content.firstElementChild.cloneNode(true);
@@ -294,7 +343,6 @@
         });
 
         const { seq } = buildRightBlocks(cv);
-        let sectionOpen = null;
         seq.forEach(block=>{
             const before = page;
             page = appendWithPagination(pagesWrap, page, right, block);
@@ -302,27 +350,18 @@
         });
     }
 
-    /* ===== Mobile renderer (одна колонка, без страниц) ===== */
+    /* === Mobile: одна колонка-лента === */
     function renderMobile(cv){
         const wrap = document.getElementById('mobile');
         wrap.innerHTML = '';
 
         const left = buildLeftBlocks(cv);
-        const rightObj = buildRightBlocks(cv);
-        const right = rightObj.seq;
+        const rightSeq = buildRightBlocks(cv).seq;
 
-        // итоговая последовательность поверху вниз
-        const order = [...left, ...right];
+        // Естественный порядок сверху вниз:
+        const order = [...left, ...rightSeq];
         order.forEach(b => wrap.appendChild(b));
     }
-
-    /* Утилита очистки обоих режимов */
-    function clearAll(){
-        document.getElementById('pages').innerHTML = '';
-        document.getElementById('mobile').innerHTML = '';
-    }
-
-    document.addEventListener('DOMContentLoaded', loadCV);
 </script>
 </body>
 </html>
