@@ -28,106 +28,60 @@
             font:14px/1.55 system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial,sans-serif;
         }
 
-        /* ===== Контейнер всех страниц ===== */
+        /* ===== Экран/печатные страницы (Desktop) ===== */
         .pages{
             width:210mm;
             margin:18mm auto;
         }
-
-        /* ===== Каждая страница — РОВНО A4 по высоте ===== */
         .listA4{
             width:210mm;
-            height:297mm;                 /* фиксируем высоту под A4 */
+            height:297mm;                 /* ровно A4 */
             background:var(--paper);
             box-shadow:0 10px 30px rgba(0,0,0,.08);
             border-radius:4px;
-            overflow:hidden;              /* важно: чтобы не было скролла внутри */
+            overflow:hidden;
             display:grid;
             padding:var(--pad-mm);
             grid-template-columns: var(--left-mm) 1fr;
             grid-template-rows: 1fr;
             column-gap: var(--gap-mm);
-            margin-bottom:12mm;           /* зазор между страницами на экране */
+            margin-bottom:12mm;
         }
-
-        /* ===== Колонки ===== */
         .colum-left{
-            display:flex;
-            flex-direction:column;
-            gap: calc(var(--gap-mm) * .6);
-            min-width:0;
-            background:#f3f3f3;
-            border-right: 1px solid #ff1010;
-            -webkit-print-color-adjust: exact;
-            padding-bottom:1px; /* микро-стабилизатор измерений */
+            display:flex; flex-direction:column; gap: calc(var(--gap-mm) * .6); min-width:0;
+            background:#f3f3f3; border-right:1px solid #ff1010; -webkit-print-color-adjust: exact;
+            padding-bottom:1px;
         }
         .colum-right{
-            display:flex;
-            flex-direction:column;
-            gap: calc(var(--gap-mm) * .6);
-            min-width:0;
+            display:flex; flex-direction:column; gap: calc(var(--gap-mm) * .6); min-width:0;
             padding-bottom:1px;
         }
 
-        /* Блоки внутри колонок */
         .colum-left > .blk{
-            background: transparent;
-            border: none;
-            padding: 0;
-            border-radius: 0;
-            break-inside: avoid;
-            page-break-inside: avoid;
+            background: transparent; border:none; padding:0; border-radius:0;
+            break-inside: avoid; page-break-inside: avoid;
         }
         .colum-right > .blk{
             border-radius: 8px;
             background: color-mix(in oklab, var(--paper) 96%, transparent);
             border: 1px solid var(--rule);
             padding: 10px 12px;
-            break-inside: avoid;
-            page-break-inside: avoid;
+            break-inside: avoid; page-break-inside: avoid;
         }
 
-        /* Фото */
         .block-photo {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            width: 60mm;
-            height: 60mm;
-            margin: 0 auto;
-            border-radius: 50%;
-            overflow: hidden;
-            background: #e0e0e0;
-            box-shadow: none;
+            display:flex; justify-content:center; align-items:center;
+            width:60mm; height:60mm; margin:0 auto; border-radius:50%; overflow:hidden;
+            background:#e0e0e0; box-shadow:none;
         }
-        .block-photo img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            border-radius: 50%;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.15);
-            display: block;
-        }
+        .block-photo img { width:100%; height:100%; object-fit:cover; border-radius:50%;
+            box-shadow:0 2px 6px rgba(0,0,0,.15); display:block; }
 
-        .block-contacts ul,
-        .block-skills ul,
-        .block-tools ul{
-            margin:.4rem 0 0; padding-left:1.1rem;
-        }
-        .block-contacts,
-        .block-skills,
-        .block-tools {
-            margin-left: 10mm;
-        }
+        .block-contacts ul, .block-skills ul, .block-tools ul{ margin:.4rem 0 0; padding-left:1.1rem; }
+        .block-contacts, .block-skills, .block-tools { margin-left:10mm; }
 
         .pill set{ list-style:none; padding:0; margin:.2rem 0 0; display:flex; flex-wrap:wrap; gap:6px; }
-        .pill set li{
-            background:var(--chip);
-            border:1px solid var(--rule);
-            border-radius:999px;
-            padding:5px 8px;
-            font-size:12px;
-        }
+        .pill set li{ background:var(--chip); border:1px solid var(--rule); border-radius:999px; padding:5px 8px; font-size:12px; }
 
         .block-name{ border:none; padding:0; }
         .block-name h1{ margin:0; font-size:28px; line-height:1.2; }
@@ -142,26 +96,42 @@
         @media print{
             html,body{ background:transparent; }
             .pages{ width:auto; margin:0; }
-            .listA4{
-                margin:0 0 0 0;
-                box-shadow:none; border-radius:0;
-            }
+            .listA4{ margin:0; box-shadow:none; border-radius:0; }
             a[href^="http"]::after{ content:" (" attr(href) ")"; color:#777; font-size:10px; }
         }
 
-        /* Адаптив (просмотр на телефоне) */
+        /* ===== Мобильный режим: одна колонка, естественная высота, без пагинации ===== */
+        #mobile{ display:none; }
+        #mobile .blk{
+            background:var(--paper);
+            border:1px solid var(--rule);
+            border-radius:8px;
+            padding:12px;
+            margin:10px 12px;
+        }
+        #mobile .block-photo{
+            width:160px; height:160px; margin:8px auto 4px auto; /* круг покрупнее на телефоне */
+        }
+        #mobile .block-contacts, #mobile .block-skills, #mobile .block-tools{
+            margin-left:0;
+        }
+
         @media (max-width: 960px){
-            .pages{ width:100%; margin:0; }
-            .listA4{ width:100%; border-radius:0; box-shadow:none; }
+            .pages{ display:none; }   /* скрываем пагинированные листы */
+            #mobile{ display:block; } /* показываем мобильный поток */
+            body{ background:#fff; }  /* чистый фон */
         }
     </style>
 </head>
 <body>
 
-<!-- Контейнер для сгенерированных страниц -->
+<!-- Desktop / Print: страницами A4 -->
 <div class="pages" id="pages"></div>
 
-<!-- Шаблон одной страницы (не отображается напрямую) -->
+<!-- Mobile: один непрерывный поток блоков -->
+<div id="mobile"></div>
+
+<!-- Шаблон одной страницы -->
 <template id="page-template">
     <div class="listA4">
         <div class="colum-left"></div>
@@ -174,7 +144,18 @@
         try{
             const res = await fetch('data.json', {cache:'no-store'});
             const data = await res.json();
-            paginateFromData(data);
+
+            // если мобильное окно — рендерим одну колонку-ленту, иначе — пагинация A4
+            const isMobile = window.matchMedia('(max-width: 960px)').matches;
+            if (isMobile) renderMobile(data);
+            else paginateFromData(data);
+
+            // при смене ширины на лету — перестраиваем
+            window.matchMedia('(max-width: 960px)').addEventListener('change', (e)=>{
+                if (e.matches) { clearAll(); renderMobile(data); }
+                else           { clearAll(); paginateFromData(data); }
+            });
+
         }catch(e){
             console.error('Не удалось загрузить data.json', e);
         }
@@ -193,66 +174,14 @@
         return node;
     }
 
-    /* mm -> px (точное вычисление через реальную метрику) */
-    function mmToPx(mm){
-        const d = document.createElement('div');
-        d.style.position = 'absolute';
-        d.style.visibility = 'hidden';
-        d.style.height = '1mm';
-        document.body.appendChild(d);
-        const one = d.getBoundingClientRect().height || 3.78; // fallback ~96dpi
-        d.remove();
-        return mm * one;
-    }
-
-    /* Создать новую страницу из шаблона */
-    function newPage(){
-        const tmpl = document.getElementById('page-template');
-        return tmpl.content.firstElementChild.cloneNode(true);
-    }
-
-    /* Проверка: влезает ли страница */
-    function pageFits(page){
-        // Сравниваем фактическую прокрутку и видимую высоту контейнера страницы
-        return page.scrollHeight <= page.clientHeight + 0.5; // небольшой люфт
-    }
-
-    /* Попытка добавить блок в указанный контейнер (колонку).
-       Если не влезает страница — блок переносится на новую страницу.
-       Возвращает текущую (возможно новую) страницу. */
-    function appendWithPagination(pagesWrap, page, columnEl, block){
-        columnEl.appendChild(block);
-        if (!pageFits(page)){
-            columnEl.removeChild(block);
-            // начать новую страницу
-            const next = newPage();
-            pagesWrap.appendChild(next);
-            const left = next.querySelector('.colum-left');
-            const right = next.querySelector('.colum-right');
-            // определить нужную колонку на новой странице
-            if (columnEl.classList.contains('colum-left')) left.appendChild(block);
-            else right.appendChild(block);
-            return next;
-        }
-        return page;
-    }
-
-    /* Генерация структурированных блоков для колонок */
+    /* Создание структурированных блоков для колонок (переиспользуется и в mobile, и в desktop) */
     function buildLeftBlocks(cv){
         const out = [];
-
-        // Фото
         if (cv.personal?.photo){
-            const ph = el('div', {class:'blk block-photo'},
-                [ el('img', {src: cv.personal.photo, alt:'Фото'}) ]);
+            const ph = el('div', {class:'blk block-photo'}, [ el('img', {src: cv.personal.photo, alt:'Фото'}) ]);
             out.push(ph);
         }
-
-        // Контакты
-        const contacts = el('div', {class:'blk block-contacts'}, [
-            el('h2', {text:'Контакты'}),
-            el('ul', {}, [])
-        ]);
+        const contacts = el('div', {class:'blk block-contacts'}, [ el('h2', {text:'Контакты'}), el('ul', {}, []) ]);
         const cul = contacts.querySelector('ul');
         if (cv.contacts?.email) cul.appendChild(el('li', {html:`📧 <a href="mailto:${cv.contacts.email}">${cv.contacts.email}</a>`}));
         if (cv.contacts?.phone){
@@ -266,52 +195,39 @@
         }
         out.push(contacts);
 
-        // Навыки
         if (Array.isArray(cv.skills) && cv.skills.length){
-            const s = el('div', {class:'blk block-skills'}, [
+            out.push(el('div', {class:'blk block-skills'}, [
                 el('h2', {text:'Навыки'}),
                 el('ul', {class:'pillset'}, cv.skills.map(x=>el('li',{text:x})))
-            ]);
-            out.push(s);
+            ]));
         }
-
-        // Инструменты
         if (Array.isArray(cv.tools) && cv.tools.length){
-            const t = el('div', {class:'blk block-tools'}, [
+            out.push(el('div', {class:'blk block-tools'}, [
                 el('h2', {text:'Инструменты'}),
                 el('ul', {class:'pillset'}, cv.tools.map(x=>el('li',{text:x})))
-            ]);
-            out.push(t);
+            ]));
         }
-
         return out;
     }
 
     function buildRightBlocks(cv){
         const seq = [];
-
-        // Имя/позиция единым блоком (компактно, лучше держать вместе)
         const head = el('div', {class:'blk'}, [
             el('div', {class:'block-name'}, [ el('h1', {text: cv.personal?.name || ''}) ]),
             el('div', {class:'block-position', text: cv.personal?.position || ''})
         ]);
         seq.push(head);
 
-        // Обо мне
         if (cv.personal?.about){
-            const about = el('div', {class:'blk block-about-me'}, [
+            seq.push(el('div', {class:'blk block-about-me'}, [
                 el('h2', {text:'Обо мне'}),
                 el('p', {text: cv.personal.about})
-            ]);
-            seq.push(about);
+            ]));
         }
 
-        // Опыт — заголовок как отдельный блок, затем каждая должность отдельным блоком
         const expHeader = () => el('div', {class:'blk'}, [ el('h2', {text:'Опыт работы'}) ]);
-        let addedAnyExp = false;
         if (Array.isArray(cv.experience) && cv.experience.length){
-            seq.push(expHeader()); // первый заголовок
-            addedAnyExp = true;
+            seq.push(expHeader());
             cv.experience.forEach(job=>{
                 const jobDiv = el('div', {class:'blk block-experience'}, [
                     el('div', {class:'job'}, [
@@ -319,16 +235,14 @@
                         el('div', {class:'meta', text:`${job.period}${job.location ? ', ' + job.location : ''}`}),
                         (Array.isArray(job.responsibilities) && job.responsibilities.length)
                             ? el('ul', {}, job.responsibilities.map(r=>el('li',{text:r})))
-                            : el('div') /* пустышка */
+                            : el('div')
                     ])
                 ]);
-                // специальная метка для логики повтора заголовка
                 jobDiv.dataset.section = 'experience';
                 seq.push(jobDiv);
             });
         }
 
-        // Образование — аналогично
         const eduHeader = () => el('div', {class:'blk'}, [ el('h2', {text:'Образование'}) ]);
         if (Array.isArray(cv.education) && cv.education.length){
             seq.push(eduHeader());
@@ -344,65 +258,68 @@
                 seq.push(edBlk);
             });
         }
-
-        return { seq, headers: { experience: expHeader, education: eduHeader } };
+        return { seq, headers: { /* desktop only */ } };
     }
 
-    /* Главная функция пагинации */
+    /* ===== Desktop pagination (как раньше) ===== */
+    function newPage(){
+        const tmpl = document.getElementById('page-template');
+        return tmpl.content.firstElementChild.cloneNode(true);
+    }
+    function pageFits(page){ return page.scrollHeight <= page.clientHeight + 0.5; }
+    function appendWithPagination(pagesWrap, page, columnEl, block){
+        columnEl.appendChild(block);
+        if (!pageFits(page)){
+            columnEl.removeChild(block);
+            const next = newPage();
+            pagesWrap.appendChild(next);
+            const left = next.querySelector('.colum-left');
+            const right = next.querySelector('.colum-right');
+            (columnEl.classList.contains('colum-left') ? left : right).appendChild(block);
+            return next;
+        }
+        return page;
+    }
     function paginateFromData(cv){
         const pagesWrap = document.getElementById('pages');
         pagesWrap.innerHTML='';
-
-        // создаём первую страницу
-        let page = newPage();
-        pagesWrap.appendChild(page);
+        let page = newPage(); pagesWrap.appendChild(page);
         let left = page.querySelector('.colum-left');
         let right = page.querySelector('.colum-right');
 
-        // левая колонка наполняется секциями блоками
-        const leftBlocks = buildLeftBlocks(cv);
-        leftBlocks.forEach(block=>{
+        buildLeftBlocks(cv).forEach(block=>{
             const before = page;
             page = appendWithPagination(pagesWrap, page, left, block);
-            if (page !== before){ // если переехали на новую страницу — переназначаем ссылки
-                left = page.querySelector('.colum-left');
-                right = page.querySelector('.colum-right');
-            }
+            if (page !== before){ left = page.querySelector('.colum-left'); right = page.querySelector('.colum-right'); }
         });
 
-        // правая колонка: последовательность мелких блоков, с повторами заголовков при переносе
-        const { seq, headers } = buildRightBlocks(cv);
-        let lastSection = null; // 'experience' | 'education' | null
+        const { seq } = buildRightBlocks(cv);
+        let sectionOpen = null;
         seq.forEach(block=>{
             const before = page;
             page = appendWithPagination(pagesWrap, page, right, block);
-
-            // если блок не поместился и перелистнули — нужно проверить, не потеряли ли заголовок секции
-            if (page !== before){
-                left = page.querySelector('.colum-left');
-                right = page.querySelector('.colum-right');
-
-                // если переносим блок секции (experience/education), добавим заголовок на новую страницу
-                const section = block.dataset.section;
-                if (section && headers[section]){
-                    const hdr = headers[section]();
-                    // ВСТАВЛЯЕМ заголовок перед самим блоком на новой странице
-                    right.insertBefore(hdr, block);
-                    // если внезапно даже заголовок не влез (крайне редкий случай) — начнём ещё одну страницу
-                    if (!pageFits(page)){
-                        right.removeChild(hdr);
-                        right.removeChild(block);
-                        const next = newPage();
-                        pagesWrap.appendChild(next);
-                        page = next;
-                        left = page.querySelector('.colum-left');
-                        right = page.querySelector('.colum-right');
-                        right.appendChild(hdr);
-                        right.appendChild(block);
-                    }
-                }
-            }
+            if (page !== before){ left = page.querySelector('.colum-left'); right = page.querySelector('.colum-right'); }
         });
+    }
+
+    /* ===== Mobile renderer (одна колонка, без страниц) ===== */
+    function renderMobile(cv){
+        const wrap = document.getElementById('mobile');
+        wrap.innerHTML = '';
+
+        const left = buildLeftBlocks(cv);
+        const rightObj = buildRightBlocks(cv);
+        const right = rightObj.seq;
+
+        // итоговая последовательность поверху вниз
+        const order = [...left, ...right];
+        order.forEach(b => wrap.appendChild(b));
+    }
+
+    /* Утилита очистки обоих режимов */
+    function clearAll(){
+        document.getElementById('pages').innerHTML = '';
+        document.getElementById('mobile').innerHTML = '';
     }
 
     document.addEventListener('DOMContentLoaded', loadCV);
