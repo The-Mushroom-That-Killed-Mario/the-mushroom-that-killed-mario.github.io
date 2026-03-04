@@ -1,0 +1,258 @@
+:root {
+    --paper: #fff;
+    --ink: #111;
+    --muted: #6b7280;
+    --rule: #e5e7eb;
+    --chip: #f3f4f6;
+    --gap-mm: 0mm;
+    --left-mm: 72mm;
+    --pad-mm: 0mm;
+}
+
+@media (prefers-color-scheme: dark) {
+    body {
+        background: #0b0d10;
+    }
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    height: 100%;
+}
+
+body {
+    margin: 0;
+    background: #f1f5f9;
+    color: var(--ink);
+    font: 14px/1.55 system-ui, -apple-system, Segoe UI, Roboto, Inter, Arial, sans-serif;
+}
+
+.pages {
+    width: 210mm;
+    margin: 18mm auto;
+}
+
+.listA4 {
+    width: 210mm;
+    height: 297mm;
+    background: var(--paper);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+    border-radius: 4px;
+    overflow: hidden;
+    display: grid;
+    padding: var(--pad-mm);
+    grid-template-columns: var(--left-mm) 1fr;
+    grid-template-rows: 1fr;
+    column-gap: var(--gap-mm);
+    margin-bottom: 12mm;
+}
+
+.colum-left {
+    display: flex;
+    flex-direction: column;
+    gap: calc(var(--gap-mm) * 0.6);
+    min-width: 0;
+    background: #f3f3f3;
+    border-right: 1px solid #ff1010;
+    -webkit-print-color-adjust: exact;
+    padding-bottom: 1px;
+}
+
+.colum-right {
+    display: flex;
+    flex-direction: column;
+    gap: calc(var(--gap-mm) * 0.6);
+    min-width: 0;
+    padding-bottom: 1px;
+}
+
+.colum-left > .blk {
+    background: transparent;
+    border: none;
+    padding: 0;
+    border-radius: 0;
+    break-inside: avoid;
+    page-break-inside: avoid;
+}
+
+.colum-right > .blk {
+    border-radius: 8px;
+    background: color-mix(in oklab, var(--paper) 96%, transparent);
+    border: 1px solid var(--rule);
+    padding: 10px 12px;
+    break-inside: avoid;
+    page-break-inside: avoid;
+}
+
+.block-photo {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 60mm;
+    height: 60mm;
+    margin: 0 auto;
+    border-radius: 50%;
+    overflow: hidden;
+    background: #e0e0e0;
+    box-shadow: none;
+}
+
+.block-photo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+    display: block;
+}
+
+.block-contacts ul,
+.block-skills ul,
+.block-tools ul {
+    margin: 0.4rem 0 0;
+    padding-left: 1.1rem;
+}
+
+.block-contacts,
+.block-skills,
+.block-tools {
+    margin-left: 10mm;
+}
+
+.pillset {
+    list-style: none;
+    padding: 0;
+    margin: 0.2rem 0 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.pillset li {
+    background: var(--chip);
+    border: 1px solid var(--rule);
+    border-radius: 999px;
+    padding: 5px 8px;
+    font-size: 12px;
+}
+
+.block-name {
+    border: none;
+    padding: 0;
+}
+
+.block-name h1 {
+    margin: 0;
+    font-size: 28px;
+    line-height: 1.2;
+}
+
+.block-position {
+    border: none;
+    padding: 0;
+    color: var(--muted);
+    margin-top: 2px;
+}
+
+.block-about-me p {
+    margin: 0.4rem 0 0;
+}
+
+.block-experience .job {
+    margin: 0.5rem 0 0;
+    padding: 0.2rem 0 0;
+    border-top: 1px solid var(--rule);
+}
+
+.block-experience .job h3 {
+    margin: 0.2rem 0;
+    font-size: 15px;
+}
+
+.meta {
+    color: var(--muted);
+    font-size: 12px;
+}
+
+#mobile {
+    display: none;
+}
+
+#mobile .blk {
+    background: var(--paper);
+    border: 1px solid var(--rule);
+    border-radius: 8px;
+    padding: 12px;
+    margin: 10px 12px;
+}
+
+#mobile .block-photo {
+    width: 160px;
+    height: 160px;
+    margin: 8px auto 4px auto;
+}
+
+#mobile .block-contacts,
+#mobile .block-skills,
+#mobile .block-tools {
+    margin-left: 0;
+}
+
+@page {
+    size: A4;
+    margin: 12mm;
+}
+
+@media print {
+    html,
+    body {
+        background: transparent;
+    }
+
+    .pages {
+        display: block !important;
+        width: auto;
+        margin: 0 !important;
+    }
+
+    #mobile {
+        display: none !important;
+    }
+
+    .listA4 {
+        margin: 0 !important;
+        box-shadow: none;
+        border-radius: 0;
+        height: 297mm;
+        overflow: hidden;
+        page-break-after: always;
+    }
+
+    .listA4:last-child {
+        page-break-after: auto;
+    }
+
+    a[href^="http"]::after {
+        content: " (" attr(href) ")";
+        color: #777;
+        font-size: 10px;
+    }
+}
+
+@media (max-width: 960px) {
+    .pages {
+        display: none;
+    }
+
+    #mobile {
+        display: block;
+    }
+
+    body {
+        background: #fff;
+    }
+}
