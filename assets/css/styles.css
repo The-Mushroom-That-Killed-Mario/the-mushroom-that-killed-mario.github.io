@@ -110,9 +110,7 @@ body {
     display: block;
 }
 
-.block-contacts ul,
-.block-skills ul,
-.block-tools ul {
+.block-contacts ul {
     margin: 0.4rem 0 0;
     padding-left: 1.1rem;
 }
