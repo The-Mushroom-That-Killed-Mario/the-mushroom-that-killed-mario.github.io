@@ -6,6 +6,40 @@ import { renderMobileFlow } from "./mobile.js";
 let cvData = null;
 let isMobile = null;
 
+function initTextVideoMode() {
+    const toggleButton = document.getElementById("fx-toggle");
+    const bgVideo = document.getElementById("bg-video");
+    const labelOff = "Бахнуть";
+    const labelOn = "Перестать";
+
+    if (!toggleButton || !bgVideo) {
+        return;
+    }
+
+    const setMode = async (enabled) => {
+        document.body.classList.toggle("text-video-mode", enabled);
+        toggleButton.textContent = enabled ? labelOn : labelOff;
+
+        if (enabled) {
+            try {
+                await bgVideo.play();
+            } catch (error) {
+                console.warn("Не удалось запустить фон-видео", error);
+            }
+            return;
+        }
+
+        bgVideo.pause();
+    };
+
+    toggleButton.addEventListener("click", async () => {
+        const enabled = !document.body.classList.contains("text-video-mode");
+        await setMode(enabled);
+    });
+
+    toggleButton.textContent = labelOff;
+}
+
 function renderCurrentMode() {
     if (!cvData) {
         return;
@@ -89,3 +123,4 @@ async function loadCV() {
 }
 
 document.addEventListener("DOMContentLoaded", loadCV);
+document.addEventListener("DOMContentLoaded", initTextVideoMode);
