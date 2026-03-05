@@ -249,10 +249,6 @@ body.text-video-mode .pillset li {
     box-shadow: none !important;
 }
 
-body.text-video-mode .block-photo {
-    display: none !important;
-}
-
 @page {
     size: A4;
     margin: 12mm;

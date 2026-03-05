@@ -97,25 +97,18 @@ async function loadCV() {
         window.addEventListener("afterprint", afterPrint);
 
         const printMedia = window.matchMedia("print");
-        if (printMedia && printMedia.addEventListener) {
-            printMedia.addEventListener("change", (event) => {
-                if (event.matches) {
-                    beforePrint();
-                    return;
-                }
-                afterPrint();
-            });
-            return;
-        }
+        const onPrintMediaChange = (event) => {
+            if (event.matches) {
+                beforePrint();
+                return;
+            }
+            afterPrint();
+        };
 
-        if (printMedia && printMedia.addListener) {
-            printMedia.addListener((event) => {
-                if (event.matches) {
-                    beforePrint();
-                    return;
-                }
-                afterPrint();
-            });
+        if (printMedia && typeof printMedia.addEventListener === "function") {
+            printMedia.addEventListener("change", onPrintMediaChange);
+        } else if (printMedia) {
+            printMedia.onchange = onPrintMediaChange;
         }
     } catch (error) {
         console.error("Не удалось загрузить data.json", error);
