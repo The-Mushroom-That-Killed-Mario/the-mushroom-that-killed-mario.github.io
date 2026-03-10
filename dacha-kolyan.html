@@ -1,0 +1,566 @@
+<!doctype html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Поездка на дачу к Коляну</title>
+    <style>
+        :root {
+            --bg: #0f1220;
+            --panel: #171b2e;
+            --panel-2: #1e2440;
+            --text: #eef2ff;
+            --muted: #b7bfdc;
+            --accent: #8b5cf6;
+            --accent-2: #22c55e;
+            --border: rgba(255,255,255,.08);
+            --shadow: 0 10px 30px rgba(0,0,0,.28);
+        }
+
+        * { box-sizing: border-box; }
+        html, body {
+            margin: 0;
+            padding: 0;
+            background:
+                    radial-gradient(circle at top, rgba(139,92,246,.18), transparent 35%),
+                    linear-gradient(180deg, #0b0e19 0%, #11162a 100%);
+            color: var(--text);
+            font: 16px/1.55 Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+        }
+
+        a { color: inherit; }
+
+        .wrap {
+            max-width: 980px;
+            margin: 0 auto;
+            padding: 32px 20px 56px;
+        }
+
+        .hero {
+            background: linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.02));
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 28px;
+            box-shadow: var(--shadow);
+            backdrop-filter: blur(10px);
+        }
+
+        .hero-top {
+            display: flex;
+            gap: 14px;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            margin-bottom: 8px;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(139,92,246,.18);
+            color: #ddd6fe;
+            border: 1px solid rgba(139,92,246,.32);
+            border-radius: 999px;
+            padding: 8px 12px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        h1 {
+            margin: 6px 0 12px;
+            font-size: clamp(30px, 5vw, 44px);
+            line-height: 1.1;
+            letter-spacing: -.02em;
+        }
+
+        .lead {
+            color: var(--muted);
+            font-size: 18px;
+            margin: 0;
+            max-width: 76ch;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 12px;
+            margin-top: 22px;
+        }
+
+        .stat {
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            padding: 14px 16px;
+        }
+
+        .stat-label {
+            color: var(--muted);
+            font-size: 13px;
+            margin-bottom: 6px;
+        }
+
+        .stat-value {
+            font-size: 20px;
+            font-weight: 700;
+            letter-spacing: -.02em;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1.2fr .8fr;
+            gap: 18px;
+            margin-top: 18px;
+        }
+
+        .card {
+            background: linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));
+            border: 1px solid var(--border);
+            border-radius: 22px;
+            padding: 22px;
+            box-shadow: var(--shadow);
+        }
+
+        h2 {
+            margin: 0 0 14px;
+            font-size: 22px;
+            line-height: 1.2;
+            letter-spacing: -.02em;
+        }
+
+        h3 {
+            margin: 18px 0 10px;
+            font-size: 17px;
+            color: #ddd6fe;
+        }
+
+        .muted { color: var(--muted); }
+
+        .todo-section + .todo-section {
+            margin-top: 18px;
+            padding-top: 16px;
+            border-top: 1px solid var(--border);
+        }
+
+        .todo-list {
+            display: grid;
+            gap: 10px;
+        }
+
+        label.todo {
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+            padding: 12px 14px;
+            border: 1px solid var(--border);
+            background: var(--panel);
+            border-radius: 16px;
+            cursor: pointer;
+            transition: transform .12s ease, border-color .12s ease, background .12s ease;
+        }
+
+        label.todo:hover {
+            transform: translateY(-1px);
+            border-color: rgba(255,255,255,.16);
+            background: var(--panel-2);
+        }
+
+        .todo input {
+            margin-top: 2px;
+            width: 18px;
+            height: 18px;
+            accent-color: var(--accent-2);
+            flex: 0 0 auto;
+            cursor: pointer;
+        }
+
+        .todo .text {
+            flex: 1;
+        }
+
+        .todo.checked .text {
+            text-decoration: line-through;
+            color: #93a0c8;
+        }
+
+        .inline-note {
+            margin-top: 12px;
+            padding: 12px 14px;
+            border-radius: 14px;
+            background: rgba(34,197,94,.08);
+            border: 1px solid rgba(34,197,94,.2);
+            color: #d1fae5;
+        }
+
+        .next-step {
+            font-size: 18px;
+            font-weight: 600;
+            padding: 14px 16px;
+            border-left: 4px solid var(--accent);
+            background: rgba(139,92,246,.08);
+            border-radius: 14px;
+        }
+
+        .shopping {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0,1fr));
+            gap: 14px;
+        }
+
+        .mini-card {
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            padding: 14px 16px;
+        }
+
+        ul.clean {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: grid;
+            gap: 8px;
+        }
+
+        ul.clean li::before {
+            content: "•";
+            color: #c4b5fd;
+            margin-right: 10px;
+        }
+
+        .plan {
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            padding: 16px;
+            overflow-x: auto;
+            font: 15px/1.5 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+            white-space: pre;
+            color: #dbe4ff;
+        }
+
+        .risk-list li::before { color: #fda4af; }
+
+        .footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-top: 18px;
+            color: var(--muted);
+            font-size: 14px;
+        }
+
+        .buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        button {
+            border: 1px solid var(--border);
+            background: var(--panel);
+            color: var(--text);
+            border-radius: 12px;
+            padding: 10px 14px;
+            font: inherit;
+            cursor: pointer;
+            transition: background .12s ease, border-color .12s ease, transform .12s ease;
+        }
+
+        button:hover {
+            background: var(--panel-2);
+            border-color: rgba(255,255,255,.18);
+            transform: translateY(-1px);
+        }
+
+        .progress {
+            position: relative;
+            height: 12px;
+            border-radius: 999px;
+            background: rgba(255,255,255,.08);
+            overflow: hidden;
+            margin-top: 14px;
+        }
+
+        .progress-bar {
+            position: absolute;
+            inset: 0 auto 0 0;
+            width: 0%;
+            background: linear-gradient(90deg, var(--accent), var(--accent-2));
+            border-radius: inherit;
+            transition: width .2s ease;
+        }
+
+        @media (max-width: 860px) {
+            .grid { grid-template-columns: 1fr; }
+            .stats, .shopping { grid-template-columns: 1fr; }
+            .wrap { padding: 20px 14px 40px; }
+            .hero, .card { padding: 18px; border-radius: 18px; }
+        }
+    </style>
+</head>
+<body>
+<main class="wrap">
+    <section class="hero">
+        <div class="hero-top">
+            <div class="badge">🚀 Проект</div>
+            <div class="badge">Статус: ▶️ В процессе</div>
+        </div>
+
+        <h1>Поездка на дачу к Коляну</h1>
+        <p class="lead">
+            Организовать поездку на дачу к Коляну так, чтобы всё прошло без суеты и косяков:
+            заранее купить еду и алкоголь в Минске, собрать нужные вещи, выехать в пятницу утром
+            и ничего не забыть.
+        </p>
+
+        <div class="stats">
+            <div class="stat">
+                <div class="stat-label">Начат</div>
+                <div class="stat-value">2026-03-10</div>
+            </div>
+            <div class="stat">
+                <div class="stat-label">Прогресс</div>
+                <div class="stat-value" id="progressText">0%</div>
+            </div>
+            <div class="stat">
+                <div class="stat-label">Следующий шаг</div>
+                <div class="stat-value" style="font-size:16px;font-weight:600;">Список еды и алкоголя</div>
+            </div>
+        </div>
+
+        <div class="progress" aria-hidden="true">
+            <div class="progress-bar" id="progressBar"></div>
+        </div>
+    </section>
+
+    <section class="grid">
+        <div class="card">
+            <h2>Критерий готовности (Definition of Done)</h2>
+            <p class="muted">Чекбоксы сохраняются в cookies на этом устройстве и в этом браузере.</p>
+
+            <div class="todo-section">
+                <h3>Покупки</h3>
+                <div class="todo-list">
+                    <label class="todo"><input type="checkbox" data-key="food-list"><span class="text">составлен список еды</span></label>
+                    <label class="todo"><input type="checkbox" data-key="food-bought"><span class="text">куплена вся хавка в Минске</span></label>
+                    <label class="todo"><input type="checkbox" data-key="alcohol-bought"><span class="text">куплен алкоголь</span></label>
+                    <label class="todo"><input type="checkbox" data-key="snacks-bought"><span class="text">куплены закуски (чипсы, орешки, соусы и т.п.)</span></label>
+                </div>
+            </div>
+
+            <div class="todo-section">
+                <h3>Логистика</h3>
+                <div class="todo-list">
+                    <label class="todo"><input type="checkbox" data-key="departure-time"><span class="text">согласовано время выезда, с учётом движения поездов</span></label>
+                    <label class="todo"><input type="checkbox" data-key="route-ready"><span class="text">маршрут до дачи понятен</span></label>
+                    <label class="todo"><input type="checkbox" data-key="friday-morning"><span class="text">выезд в пятницу утром</span></label>
+                </div>
+            </div>
+
+            <div class="todo-section">
+                <h3>Снаряжение</h3>
+                <div class="todo-list">
+                    <label class="todo"><input type="checkbox" data-key="personal-items"><span class="text">взяты личные вещи</span></label>
+                    <label class="todo"><input type="checkbox" data-key="chargers"><span class="text">взяты зарядки / powerbank</span></label>
+                    <label class="todo"><input type="checkbox" data-key="laptops"><span class="text">взяты ноутбуки с мышками</span></label>
+                    <label class="todo"><input type="checkbox" data-key="gamepads"><span class="text">взяты джойстики</span></label>
+                    <label class="todo"><input type="checkbox" data-key="money"><span class="text">взяты деньги / карта</span></label>
+                </div>
+            </div>
+
+            <div class="todo-section">
+                <h3>Дачные штуки</h3>
+                <div class="todo-list">
+                    <label class="todo"><input type="checkbox" data-key="towels"><span class="text">бумажные полотенца</span></label>
+                    <label class="todo"><input type="checkbox" data-key="tableware"><span class="text">одноразовая посуда</span></label>
+                    <label class="todo"><input type="checkbox" data-key="trash-bags"><span class="text">пакеты для мусора</span></label>
+                </div>
+            </div>
+
+            <div class="todo-section">
+                <h3>Контроль</h3>
+                <div class="todo-list">
+                    <label class="todo"><input type="checkbox" data-key="nothing-forgotten"><span class="text">ничего не забыто</span></label>
+                    <label class="todo"><input type="checkbox" data-key="everyone-knows"><span class="text">все участники знают время выезда</span></label>
+                </div>
+            </div>
+
+            <div class="footer">
+                <div>Всего задач: <strong id="totalTasks">0</strong> · Выполнено: <strong id="doneTasks">0</strong></div>
+                <div class="buttons">
+                    <button type="button" id="checkAllBtn">Отметить всё</button>
+                    <button type="button" id="resetBtn">Сбросить</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>Следующий конкретный шаг</h2>
+            <div class="next-step">Составить список еды и алкоголя, который нужно купить в Минске.</div>
+
+            <h3>Список покупок</h3>
+            <div class="shopping">
+                <div class="mini-card">
+                    <h3 style="margin-top:0">Еда</h3>
+                    <ul class="clean">
+                        <li>мясо для шашлыка</li>
+                        <li>хлеб</li>
+                        <li>овощи</li>
+                        <li>колбаса / сыр</li>
+                        <li>соусы</li>
+                        <li>роллтон</li>
+                    </ul>
+                </div>
+                <div class="mini-card">
+                    <h3 style="margin-top:0">Закуски</h3>
+                    <ul class="clean">
+                        <li>чипсы</li>
+                        <li>орешки</li>
+                        <li>сухарики</li>
+                    </ul>
+                </div>
+                <div class="mini-card">
+                    <h3 style="margin-top:0">Напитки</h3>
+                    <ul class="clean">
+                        <li>вода</li>
+                        <li>сок</li>
+                    </ul>
+                </div>
+                <div class="mini-card">
+                    <h3 style="margin-top:0">Алкоголь</h3>
+                    <ul class="clean">
+                        <li>пиво</li>
+                        <li>крепкое (по ситуации)</li>
+                        <li>что-нибудь на утро</li>
+                    </ul>
+                </div>
+            </div>
+
+            <h3>План поездки</h3>
+            <div class="plan">Среда
+                │
+                ├─ составить список покупок
+                └─ договориться с Коляном и братишкой Капуром
+
+                Четверг
+                └─ затариться
+
+                Пятница
+                │
+                └─ выехать утром</div>
+
+            <h3>Риски (что можно проебать)</h3>
+            <ul class="clean risk-list">
+                <li>забыть открывашку</li>
+                <li>забыть зарядки</li>
+                <li>выехать слишком поздно</li>
+                <li>не купить воды</li>
+            </ul>
+
+            <div class="inline-note">
+                Совет: положи в рюкзак зарядки, карты/деньги и открывашку заранее — это самые тупые потери времени в день выезда.
+            </div>
+        </div>
+    </section>
+</main>
+
+<script>
+    const COOKIE_PREFIX = 'kolyan-trip-';
+    const COOKIE_DAYS = 365;
+
+    function setCookie(name, value, days) {
+        const date = new Date();
+        date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+        document.cookie = `${encodeURIComponent(name)}=${encodeURIComponent(value)}; expires=${date.toUTCString()}; path=/; SameSite=Lax`;
+    }
+
+    function getCookie(name) {
+        const encoded = encodeURIComponent(name) + '=';
+        const cookies = document.cookie.split(';');
+        for (let c of cookies) {
+            c = c.trim();
+            if (c.indexOf(encoded) === 0) {
+                return decodeURIComponent(c.substring(encoded.length));
+            }
+        }
+        return null;
+    }
+
+    function deleteCookie(name) {
+        document.cookie = `${encodeURIComponent(name)}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/; SameSite=Lax`;
+    }
+
+    const checkboxes = Array.from(document.querySelectorAll('input[type="checkbox"][data-key]'));
+    const progressText = document.getElementById('progressText');
+    const progressBar = document.getElementById('progressBar');
+    const totalTasks = document.getElementById('totalTasks');
+    const doneTasks = document.getElementById('doneTasks');
+    const resetBtn = document.getElementById('resetBtn');
+    const checkAllBtn = document.getElementById('checkAllBtn');
+
+    function updateVisualState(checkbox) {
+        const label = checkbox.closest('label.todo');
+        label.classList.toggle('checked', checkbox.checked);
+    }
+
+    function updateProgress() {
+        const total = checkboxes.length;
+        const done = checkboxes.filter(cb => cb.checked).length;
+        const percent = total ? Math.round(done / total * 100) : 0;
+
+        totalTasks.textContent = total;
+        doneTasks.textContent = done;
+        progressText.textContent = `${percent}%`;
+        progressBar.style.width = `${percent}%`;
+    }
+
+    function loadState() {
+        checkboxes.forEach(cb => {
+            const saved = getCookie(COOKIE_PREFIX + cb.dataset.key);
+            cb.checked = saved === '1';
+            updateVisualState(cb);
+        });
+        updateProgress();
+    }
+
+    function saveState(checkbox) {
+        setCookie(COOKIE_PREFIX + checkbox.dataset.key, checkbox.checked ? '1' : '0', COOKIE_DAYS);
+        updateVisualState(checkbox);
+        updateProgress();
+    }
+
+    checkboxes.forEach(cb => {
+        cb.addEventListener('change', () => saveState(cb));
+    });
+
+    resetBtn.addEventListener('click', () => {
+        checkboxes.forEach(cb => {
+            cb.checked = false;
+            deleteCookie(COOKIE_PREFIX + cb.dataset.key);
+            updateVisualState(cb);
+        });
+        updateProgress();
+    });
+
+    checkAllBtn.addEventListener('click', () => {
+        checkboxes.forEach(cb => {
+            cb.checked = true;
+            setCookie(COOKIE_PREFIX + cb.dataset.key, '1', COOKIE_DAYS);
+            updateVisualState(cb);
+        });
+        updateProgress();
+    });
+
+    loadState();
+</script>
+</body>
+</html>
+'''
+
+path = Path('/mnt/data/dacha-kolyan.html')
+path.write_text(html, encoding='utf-8')
+print(f"Saved to {path}")
